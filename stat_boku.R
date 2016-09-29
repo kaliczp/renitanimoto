@@ -3,6 +3,7 @@ taxa_nov = read.csv2("Taxa_Nov.csv", fileEncoding="latin2")
 
 row.names(taxa_nov)
 row.names(taxa_nov) <- taxa_nov[ ,1]
+taxa_nov <- taxa_nov[,-1]
 library(plyr)
 
 tanimoto <- function(this, other) {
@@ -19,8 +20,8 @@ tanimoto <- function(this, other) {
   (ta + td) / (ta+td+2*(tb+tc))
 }
 
-tanimoto(taxa_nov)
-tanimoto(taxa_nov[,1],taxa_nov[,1])
+## Két KÜLÖNBÖZő oszlopot kell megadni!!!
+tanimoto(taxa_nov[,1],taxa_nov[,2])
 
 
 tanimoto.dist <- function(x){
