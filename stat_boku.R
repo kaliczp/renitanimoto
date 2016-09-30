@@ -23,7 +23,7 @@ tanimoto <- function(this, other) {
 ## Két különbözõ oszlopot kell megadni!!!
 tanimoto(taxa_nov[,1],taxa_nov[,2])
 
-tanimoto.index <- function(x){
+tanimoto.matrix <- function(x, method = c("dist","index")) {
   col.num <- ncol(x)
   index.mat <- matrix(rep(NA,col.num^2),nrow=col.num)
   colnames(index.mat) <- colnames(x)
@@ -33,12 +33,16 @@ tanimoto.index <- function(x){
       index.mat[sor, oszlop] <- tanimoto(x[,sor],x[,oszlop])
     }
   }
-  index.mat
+  if(method == "index") {
+      return(index.mat)
+  } else {
+      tan.dist <- as.dist(-log2(index.mat))
+      return(tan.dist)
+  }
 }
 
-tan.index.nov <- tanimoto.index(taxa_nov)
-ossz.tan.dis.nov <- -log2(tan.index.nov)
-ossz.tan.dis.nov <- as.dist(ossz.tan.dis.nov)
+tan.index.nov <- tanimoto.matrix(taxa_nov, "index")
+ossz.tan.dis.nov <- tanimoto.matrix(taxa_nov, "dist")
 
 ## Kluszter
 
