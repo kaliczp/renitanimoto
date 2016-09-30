@@ -6,6 +6,7 @@ taxa_nov <- t(taxa_nov)
 library(plyr)
 
 tanimoto <- function(this, other) {
+    ## Convert to presence absence
   this <- this > 0
   other <- other > 0
   ## a - number of rows where both columns are 1
@@ -22,23 +23,22 @@ tanimoto <- function(this, other) {
 ## Két különbözõ oszlopot kell megadni!!!
 tanimoto(taxa_nov[,1],taxa_nov[,2])
 
-
-tanimoto.dist <- function(x){
+tanimoto.index <- function(x){
   col.num <- ncol(x)
-  dist.mat <- matrix(rep(NA,col.num^2),nrow=col.num)
-  colnames(dist.mat) <- colnames(x)
-  rownames(dist.mat) <- colnames(x)
+  index.mat <- matrix(rep(NA,col.num^2),nrow=col.num)
+  colnames(index.mat) <- colnames(x)
+  rownames(index.mat) <- colnames(x)
   for(sor in 1:col.num){
     for(oszlop in 1:col.num){
-      dist.mat[sor, oszlop] <- tanimoto(x[,sor],x[,oszlop])
+      index.mat[sor, oszlop] <- tanimoto(x[,sor],x[,oszlop])
     }
   }
-  dist.mat
+  index.mat
 }
 
-tan.dist.nov<-tanimoto.dist(taxa_nov)
-
-ossz.tan.dis.nov <- as.dist(tan.dist.nov)
+tan.index.nov <- tanimoto.index(taxa_nov)
+ossz.tan.dis.nov <- -log2(tan.index.nov)
+ossz.tan.dis.nov <- as.dist(ossz.tan.dis.nov)
 
 ## Kluszter
 
@@ -52,11 +52,5 @@ plot(hc.comp.nov, cex = 0.5, ylab="", main="Complete")
 identify(hc.comp.nov) #?identify.hclust
 plot(hc.ward.nov, cex = 0.5, ylab="", main="Ward")
 
-tan.szaz.nov <- round(as.dist(tan.dist.nov*100),1)
-print(tan.szaz.nov)
-
-## hasonlóság leírására
-proba=hclust(100-tan.szaz.nov)
-proba2=hclust(100-tan.szaz.nov, "ward.D")
-plot(proba)
-plot(proba2)
+## Ha kell a nullára húzza a számokat
+plot(hc.comp.nov, cex = 0.5, ylab="", main="Complete", hang=-0.1)
