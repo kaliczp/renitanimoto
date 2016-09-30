@@ -1,9 +1,12 @@
 taxa_nov = read.csv2("Taxa_Nov.csv", fileEncoding="latin2")
-##taxa_nov <- taxa_nov[,-c(1)]
+taxa_nov <- t(taxa_nov)
 
 row.names(taxa_nov)
-row.names(taxa_nov) <- taxa_nov[ ,1]
-taxa_nov <- taxa_nov[,-1]
+colnames(taxa_nov) <- taxa_nov[1, ]
+taxa_nov <- taxa_nov[-1, ]
+##row.names(taxa_nov) <- taxa_nov[ ,1]
+##taxa_nov <- taxa_nov[,-1]
+##names(taxa_nov)
 library(plyr)
 
 tanimoto <- function(this, other) {
@@ -20,7 +23,7 @@ tanimoto <- function(this, other) {
   (ta + td) / (ta+td+2*(tb+tc))
 }
 
-## KÃ©t KÃœLÃ–NBÃ–ZÅ‘ oszlopot kell megadni!!!
+## Két különbözõ oszlopot kell megadni!!!
 tanimoto(taxa_nov[,1],taxa_nov[,2])
 
 
@@ -38,3 +41,25 @@ tanimoto.dist <- function(x){
 }
 
 tan.dist.nov<-tanimoto.dist(taxa_nov)
+
+ossz.tan.dis.nov <- as.dist(tan.dist.nov)
+
+## Kluszter
+
+hc.comp.nov <- hclust(ossz.tan.dis.nov) # complet
+hc.ward.nov <- hclust(ossz.tan.dis.nov, "ward.D") # Ward
+hc.single.nov <- hclust(ossz.tan.dis.nov, "single")
+
+## távolság leírására
+par(mar = c(5.1, 0.1, 4.1, 0.1))
+plot(hc.comp.nov, cex = 0.5, axes=F, ylab="", main="Complete")
+plot(hc.ward.nov, cex = 0.5, axes=F, ylab="", main="Ward")
+
+tan.szaz.nov <- round(as.dist(tan.dist.nov*100),1)
+print(tan.szaz.nov)
+
+## hasonlóság leírására
+proba=hclust(100-ossz.tan.dis.nov)
+proba2=hclust(100-ossz.tan.dis.nov, "ward.D")
+plot(proba)
+plot(proba2)
